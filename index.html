@@ -6,6 +6,7 @@
 <title>Bharat 3D • Independence Day Tribute</title>
 <meta name="theme-color" content="#FF9933" />
 <link rel="preconnect" href="https://unpkg.com">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
   :root {
     --saffron: #ff9933;
@@ -24,7 +25,7 @@
     margin: 0;
     background: radial-gradient(1200px 800px at 70% -10%, #20306a 0%, #0b0f23 50%, #05070f 100%);
     color: #fff;
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, Poppins, Noto Sans, Arial, sans-serif;
+    font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Arial, sans-serif;
     overflow: hidden;
   }
   #stage {
@@ -36,6 +37,7 @@
     pointer-events: none;
     position: fixed; inset: 0; display: grid;
     grid-template-rows: 1fr auto auto; place-items: center; padding: 16px;
+    z-index: 10;
   }
   .title {
     pointer-events: auto;
@@ -89,6 +91,9 @@
     color: #081016; font-weight: 800; letter-spacing: 0.4px;
     box-shadow: 0 6px 20px rgba(255,153,51,0.35), 0 6px 24px rgba(19,136,8,0.25);
     transition: transform .15s ease, box-shadow .2s ease, filter .2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
   button:hover, a.btn:hover { transform: translateY(-1px); filter: saturate(1.15); }
   .ghost {
@@ -97,13 +102,16 @@
   }
   .small { font-size: 13px; opacity: 0.9; padding: 6px 10px; }
   .rec-dot {
-    display:inline-block; width:10px; height:10px; background:#ff3b3b; border-radius:50%; margin-right:8px;
+    display:inline-block; width:10px; height:10px; background:#ff3b3b; border-radius:50%; 
     box-shadow: 0 0 0 0 rgba(255,59,59,0.8); animation: pulse 1.4s infinite;
   }
   .badge {
     font-size: 12px; padding: 6px 10px; border-radius: 999px;
     background: rgba(10,61,143,0.15); border: 1px solid rgba(10,61,143,0.35); color: #d7e7ff;
     transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
   }
   .badge:hover {
     background: rgba(10,61,143,0.3);
@@ -118,6 +126,7 @@
     position: fixed; inset: -10vmax; pointer-events: none;
     background: radial-gradient(80% 60% at 50% 30%, transparent 60%, rgba(0,0,0,0.35) 100%);
     mix-blend-mode: multiply;
+    z-index: 5;
   }
   
   /* New elements */
@@ -128,6 +137,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    z-index: 20;
   }
   
   .duration-select {
@@ -139,6 +149,7 @@
     font-size: 14px;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    cursor: pointer;
   }
   
   .duration-select option {
@@ -193,6 +204,7 @@
     opacity: 0;
     transition: all 0.5s ease;
     pointer-events: none;
+    z-index: 30;
   }
   
   .info-card.show {
@@ -238,11 +250,142 @@
     backdrop-filter: blur(10px);
     font-weight: bold;
     transition: all 0.3s ease;
+    z-index: 30;
   }
   
   .info-icon:hover {
     background: rgba(255,255,255,0.15);
     transform: scale(1.1);
+  }
+  
+  /* Music player */
+  .music-player {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    background: var(--glass);
+    border: 1px solid var(--glass-stroke);
+    border-radius: 14px;
+    padding: 8px 12px;
+    backdrop-filter: blur(10px);
+    z-index: 20;
+  }
+  
+  .music-control {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+  
+  .music-control:hover {
+    background: rgba(255,255,255,0.15);
+  }
+  
+  .music-title {
+    font-size: 12px;
+    max-width: 140px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  /* Night mode toggle */
+  .night-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 36px;
+    height: 36px;
+    background: var(--glass);
+    border: 1px solid var(--glass-stroke);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    z-index: 30;
+  }
+  
+  .night-toggle:hover {
+    background: rgba(255,255,255,0.15);
+    transform: scale(1.1);
+  }
+  
+  /* FPS Counter */
+  .fps-counter {
+    position: fixed;
+    bottom: 20px;
+    right: 100px;
+    background: rgba(0,0,0,0.3);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    z-index: 10;
+  }
+  
+  /* Toast notifications */
+  .toast {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.7);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 100;
+    pointer-events: none;
+  }
+  
+  .toast.show {
+    opacity: 1;
+  }
+  
+  /* Keyboard shortcuts */
+  .shortcuts {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    background: var(--glass);
+    border: 1px solid var(--glass-stroke);
+    border-radius: 8px;
+    padding: 8px 16px;
+    backdrop-filter: blur(10px);
+    z-index: 20;
+  }
+  
+  .shortcut-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+  }
+  
+  .key {
+    background: rgba(255,255,255,0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
   }
 </style>
 </head>
@@ -254,20 +397,22 @@
     <div class="line1">Happy Independence Day</div>
     <div class="line2">भारत • 15 अगस्त</div>
     <div class="chips">
-      <div class="chip">Waving Tricolour</div>
-      <div class="chip">Ashoka Chakra • 24 spokes</div>
-      <div class="chip">Tri‑colour Fireworks</div>
-      <div class="chip">WebM Export</div>
-      <div class="chip">Interactive Controls</div>
+      <div class="chip"><i class="fas fa-flag"></i> Waving Tricolour</div>
+      <div class="chip"><i class="fas fa-dharmachakra"></i> Ashoka Chakra</div>
+      <div class="chip"><i class="fas fa-fire"></i> Tri‑colour Fireworks</div>
+      <div class="chip"><i class="fas fa-music"></i> Patriotic Music</div>
+      <div class="chip"><i class="fas fa-video"></i> Video Recording</div>
     </div>
   </div>
 
   <div class="panel" style="gap:12px; flex-wrap: wrap;">
-    <button id="recordBtn" title="Record a 10‑second WebM of the live 3D scene">
-      <span class="rec-dot" id="recDot" style="visibility:hidden"></span> Record 10s
+    <button id="recordBtn" title="Record a video of the live 3D scene">
+      <span class="rec-dot" id="recDot" style="visibility:hidden"></span> <i class="fas fa-video"></i> Record
     </button>
-    <a id="downloadLink" class="btn ghost small" style="display:none" download="Bharat-3D-Independence-Day.webm">Download</a>
-    <span class="badge" id="fpsCounter">60 FPS • GPU</span>
+    <a id="downloadLink" class="btn ghost small" style="display:none" download="Bharat-3D-Independence-Day.webm">
+      <i class="fas fa-download"></i> Download
+    </a>
+    <span class="badge" id="fpsCounter"><i class="fas fa-bolt"></i> 60 FPS • GPU</span>
     <span class="credit">Built with Three.js + GLSL</span>
   </div>
 
@@ -276,11 +421,12 @@
 
 <div class="vignette"></div>
 <div id="countdown" class="countdown">3</div>
+<div id="toast" class="toast">Recording started! Press 'R' to stop</div>
 
 <!-- Information card -->
 <div class="info-card" id="infoCard">
   <button class="close-btn" id="closeInfo">×</button>
-  <h3>Indian Independence</h3>
+  <h3><i class="fas fa-info-circle"></i> Indian Independence</h3>
   <p>India gained independence from British rule on August 15, 1947. This day is celebrated across the nation with flag-hoisting ceremonies, parades, and cultural events.</p>
   <p>The tricolour flag features:</p>
   <ul>
@@ -295,17 +441,31 @@
 
 <div class="controls">
   <select id="durationSelect" class="duration-select">
-    <option value="10">10s Recording</option>
+    <option value="5">5s Recording</option>
+    <option value="10" selected>10s Recording</option>
     <option value="15">15s Recording</option>
-    <option value="20">20s Recording</option>
   </select>
   <div class="sound-toggle" id="soundToggle">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-      <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-      <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-    </svg>
+    <i class="fas fa-volume-up"></i>
   </div>
+</div>
+
+<div class="music-player">
+  <button class="music-control" id="prevMusic"><i class="fas fa-step-backward"></i></button>
+  <button class="music-control" id="playPause"><i class="fas fa-play"></i></button>
+  <button class="music-control" id="nextMusic"><i class="fas fa-step-forward"></i></button>
+  <div class="music-title" id="musicTitle">Vande Mataram</div>
+</div>
+
+<div class="night-toggle" id="nightToggle">
+  <i class="fas fa-moon"></i>
+</div>
+
+<div class="shortcuts">
+  <div class="shortcut-item"><span class="key">F</span> Fireworks</div>
+  <div class="shortcut-item"><span class="key">R</span> Record</div>
+  <div class="shortcut-item"><span class="key">S</span> Sound</div>
+  <div class="shortcut-item"><span class="key">I</span> Info</div>
 </div>
 
 <!-- three.js -->
@@ -314,85 +474,80 @@
 
 <script>
 (() => {
-  // FPS counter
-  let frameCount = 0;
-  let lastFpsUpdate = 0;
-  const fpsCounter = document.getElementById('fpsCounter');
-  
   // Audio context for sound effects
   let audioContext;
-  let soundOn = false;
-  let fireworksSound;
+  let soundOn = true;
   const soundToggle = document.getElementById('soundToggle');
   
-  // Info card
-  const infoIcon = document.getElementById('infoIcon');
-  const infoCard = document.getElementById('infoCard');
-  const closeInfo = document.getElementById('closeInfo');
+  // Music player
+  const audio = new Audio();
+  const musicTitles = ["Vande Mataram", "Jana Gana Mana", "Ae Mere Watan Ke Logo"];
+  const musicFiles = [
+    "https://assets.mixkit.co/music/preview/mixkit-patriotic-008-102.mp3",
+    "https://assets.mixkit.co/music/preview/mixkit-patriotic-007-102.mp3",
+    "https://assets.mixkit.co/music/preview/mixkit-patriotic-006-102.mp3"
+  ];
+  let currentMusic = 0;
+  let isPlaying = false;
+  const playPauseBtn = document.getElementById('playPause');
+  const prevMusicBtn = document.getElementById('prevMusic');
+  const nextMusicBtn = document.getElementById('nextMusic');
+  const musicTitle = document.getElementById('musicTitle');
   
   // Initialize audio
   function initAudio() {
     try {
       audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      
-      // Create fireworks sound
-      fireworksSound = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-      fireworksSound.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      fireworksSound.type = 'sine';
-      fireworksSound.frequency.value = 0;
-      gainNode.gain.value = 0;
-      fireworksSound.start();
-      
-      soundOn = true;
-      soundToggle.innerHTML = `
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-        </svg>
-      `;
+      loadMusic(currentMusic);
     } catch (e) {
       console.log("Audio not supported", e);
       soundToggle.style.display = 'none';
+      document.querySelector('.music-player').style.display = 'none';
     }
   }
   
+  function loadMusic(index) {
+    audio.src = musicFiles[index];
+    musicTitle.textContent = musicTitles[index];
+    if (isPlaying) {
+      audio.play();
+    }
+  }
+  
+  // Toggle music play/pause
+  playPauseBtn.addEventListener('click', () => {
+    if (!audioContext) return;
+    
+    if (isPlaying) {
+      audio.pause();
+      playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+    } else {
+      audio.play();
+      playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+    }
+    isPlaying = !isPlaying;
+  });
+  
+  // Previous music
+  prevMusicBtn.addEventListener('click', () => {
+    currentMusic = (currentMusic - 1 + musicFiles.length) % musicFiles.length;
+    loadMusic(currentMusic);
+  });
+  
+  // Next music
+  nextMusicBtn.addEventListener('click', () => {
+    currentMusic = (currentMusic + 1) % musicFiles.length;
+    loadMusic(currentMusic);
+  });
+  
   // Toggle sound
   soundToggle.addEventListener('click', () => {
-    if (!audioContext) {
-      initAudio();
-      return;
-    }
-    
     soundOn = !soundOn;
     if (soundOn) {
-      soundToggle.innerHTML = `
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-        </svg>
-      `;
+      soundToggle.innerHTML = '<i class="fas fa-volume-up"></i>';
     } else {
-      soundToggle.innerHTML = `
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-          <line x1="23" y1="9" x2="17" y2="15"></line>
-          <line x1="17" y1="9" x2="23" y2="15"></line>
-        </svg>
-      `;
+      soundToggle.innerHTML = '<i class="fas fa-volume-mute"></i>';
     }
-  });
-  
-  // Info card toggle
-  infoIcon.addEventListener('click', () => {
-    infoCard.classList.add('show');
-  });
-  
-  closeInfo.addEventListener('click', () => {
-    infoCard.classList.remove('show');
   });
   
   // Play fireworks sound
@@ -691,7 +846,14 @@
 
   // --- Fireworks particle system (tri-colour) ---
   const fireworks = [];
-  const colors = [ new THREE.Color('#ff9933'), new THREE.Color('#ffffff'), new THREE.Color('#138808') ];
+  const colors = [ 
+    new THREE.Color('#ff9933'), 
+    new THREE.Color('#ffffff'), 
+    new THREE.Color('#138808'),
+    new THREE.Color('#ff0000'),
+    new THREE.Color('#ffff00'),
+    new THREE.Color('#00ffff')
+  ];
   const fwGroup = new THREE.Group();
   scene.add(fwGroup);
 
@@ -865,6 +1027,11 @@
     }
   }
 
+  // FPS counter
+  let frameCount = 0;
+  let lastFpsUpdate = 0;
+  const fpsCounter = document.getElementById('fpsCounter');
+  
   function animate() {
     const t = clock.getElapsedTime();
     const dt = clock.getDelta();
@@ -905,93 +1072,181 @@
   
   // Initialize audio on first interaction
   document.body.addEventListener('click', function init() {
-    if (!audioContext) {
-      initAudio();
-    }
+    initAudio();
     document.body.removeEventListener('click', init);
   }, { once: true });
 
+  // Info card
+  const infoIcon = document.getElementById('infoIcon');
+  const infoCard = document.getElementById('infoCard');
+  const closeInfo = document.getElementById('closeInfo');
+  
+  // Toggle info card
+  infoIcon.addEventListener('click', () => {
+    infoCard.classList.add('show');
+  });
+  
+  closeInfo.addEventListener('click', () => {
+    infoCard.classList.remove('show');
+  });
+  
+  // Night mode toggle
+  const nightToggle = document.getElementById('nightToggle');
+  nightToggle.addEventListener('click', () => {
+    nightToggle.innerHTML = nightToggle.innerHTML.includes('moon') 
+      ? '<i class="fas fa-sun"></i>' 
+      : '<i class="fas fa-moon"></i>';
+    
+    // Toggle sky color
+    if (skyMat.uniforms.top.value.equals(new THREE.Color('#0b1020'))) {
+      skyMat.uniforms.top.value = new THREE.Color('#001144');
+      skyMat.uniforms.mid.value = new THREE.Color('#000022');
+      skyMat.uniforms.bot.value = new THREE.Color('#000011');
+    } else {
+      skyMat.uniforms.top.value = new THREE.Color('#0b1020');
+      skyMat.uniforms.mid.value = new THREE.Color('#1c2a60');
+      skyMat.uniforms.bot.value = new THREE.Color('#030611');
+    }
+  });
+
   animate();
 
-  // ---- Recording to WebM (10 seconds) ----
+  // ---- Recording to WebM ----
   const recordBtn = document.getElementById('recordBtn');
   const recDot = document.getElementById('recDot');
   const downloadLink = document.getElementById('downloadLink');
   const durationSelect = document.getElementById('durationSelect');
   const countdownEl = document.getElementById('countdown');
+  const toast = document.getElementById('toast');
   let mediaRecorder, recordedChunks = [], isRecording = false;
+
+  function showToast(message) {
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 3000);
+  }
 
   function showCountdown(seconds, callback) {
     countdownEl.style.opacity = 1;
     countdownEl.textContent = seconds;
     
     if (seconds > 0) {
-      gsap.fromTo(countdownEl, 
-        { scale: 0.5, opacity: 0 }, 
-        { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(1.7)" }
-      );
+      countdownEl.animate([
+        { transform: 'scale(0.5)', opacity: 0 },
+        { transform: 'scale(1)', opacity: 1 }
+      ], {
+        duration: 300,
+        easing: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+      });
       
       setTimeout(() => {
-        gsap.to(countdownEl, { 
-          scale: 0.8, 
-          opacity: 0.5, 
-          duration: 0.7, 
-          ease: "power1.out",
-          onComplete: () => {
-            showCountdown(seconds - 1, callback);
-          }
+        countdownEl.animate([
+          { transform: 'scale(1)', opacity: 1 },
+          { transform: 'scale(0.8)', opacity: 0.5 }
+        ], {
+          duration: 700,
+          easing: 'ease-out'
         });
+        setTimeout(() => {
+          showCountdown(seconds - 1, callback);
+        }, 700);
       }, 800);
     } else {
-      gsap.to(countdownEl, { 
-        scale: 1.5, 
-        opacity: 0, 
-        duration: 0.5, 
-        ease: "power2.in",
-        onComplete: callback
-      });
+      countdownEl.animate([
+        { transform: 'scale(1)', opacity: 1 },
+        { transform: 'scale(1.5)', opacity: 0 }
+      ], {
+        duration: 500,
+        easing: 'ease-in'
+      }).onfinish = callback;
     }
   }
 
   function startRecording(seconds=10) {
     if (isRecording) return;
+    
+    if (!MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) {
+      showToast("WebM recording not supported in your browser");
+      return;
+    }
+    
     const stream = canvas.captureStream(60);
     recordedChunks = [];
-    mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
-    mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
+    
+    try {
+      mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
+    } catch (e) {
+      showToast("Error: " + e.message);
+      return;
+    }
+    
+    mediaRecorder.ondataavailable = e => { 
+      if (e.data.size > 0) recordedChunks.push(e.data); 
+    };
+    
     mediaRecorder.onstop = () => {
       const blob = new Blob(recordedChunks, { type: 'video/webm' });
       const url = URL.createObjectURL(blob);
       downloadLink.href = url;
       downloadLink.style.display = 'inline-block';
-      downloadLink.textContent = 'Download (WebM)';
-      recordBtn.textContent = 'Record';
+      downloadLink.textContent = 'Download Video';
+      recordBtn.innerHTML = '<i class="fas fa-video"></i> Record';
       recDot.style.visibility = 'hidden';
+      isRecording = false;
+      showToast("Recording complete! Click Download to save");
+    };
+    
+    mediaRecorder.onerror = (e) => {
+      console.error("MediaRecorder error:", e);
+      showToast("Recording error: " + e.error.name);
       isRecording = false;
     };
     
     showCountdown(3, () => {
-      mediaRecorder.start();
-      isRecording = true;
-      recDot.style.visibility = 'visible';
-      recordBtn.textContent = 'Recording...';
-
-      setTimeout(() => {
-        if (isRecording) mediaRecorder.stop();
-      }, seconds * 1000);
+      try {
+        mediaRecorder.start();
+        isRecording = true;
+        recDot.style.visibility = 'visible';
+        recordBtn.innerHTML = '<span class="rec-dot"></span> <i class="fas fa-video"></i> Recording...';
+        showToast("Recording started! Press 'R' to stop");
+        
+        setTimeout(() => {
+          if (isRecording) {
+            mediaRecorder.stop();
+          }
+        }, seconds * 1000);
+      } catch (e) {
+        showToast("Recording failed: " + e.message);
+      }
     });
   }
 
+  function stopRecording() {
+    if (isRecording) {
+      mediaRecorder.stop();
+    }
+  }
+
   recordBtn.addEventListener('click', () => {
-    const seconds = parseInt(durationSelect.value);
-    startRecording(seconds);
+    if (isRecording) {
+      stopRecording();
+    } else {
+      const seconds = parseInt(durationSelect.value);
+      startRecording(seconds);
+    }
   });
   
   // Add keyboard controls
   document.addEventListener('keydown', (e) => {
     if (e.key === 'r' || e.key === 'R') {
-      const seconds = parseInt(durationSelect.value);
-      startRecording(seconds);
+      if (isRecording) {
+        stopRecording();
+      } else {
+        const seconds = parseInt(durationSelect.value);
+        startRecording(seconds);
+      }
     }
     if (e.key === 'f' || e.key === 'F') {
       spawnFirework();
@@ -1006,6 +1261,12 @@
       if (infoCard.classList.contains('show')) {
         infoCard.classList.remove('show');
       }
+    }
+    if (e.key === 'm' || e.key === 'M') {
+      playPauseBtn.click();
+    }
+    if (e.key === 'n' || e.key === 'N') {
+      nightToggle.click();
     }
   });
   
