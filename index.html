@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bharat 3D • Independence Day Tribute</title>
+<meta name="theme-color" content="#FF9933" />
+<link rel="preconnect" href="https://unpkg.com">
+<style>
+  :root {
+    --saffron: #ff9933;
+    --white:   #ffffff;
+    --green:   #138808;
+    --chakra:  #0A3D8F;
+    --bg1: #0b1020;
+    --bg2: #1a1f3a;
+    --glass: rgba(255,255,255,0.08);
+    --glass-stroke: rgba(255,255,255,0.18);
+    --glow: rgba(255,255,255,0.35);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: radial-gradient(1200px 800px at 70% -10%, #20306a 0%, #0b0f23 50%, #05070f 100%);
+    color: #fff;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Poppins, Noto Sans, Arial, sans-serif;
+    overflow: hidden;
+  }
+  #stage {
+    position: fixed; inset: 0; display: block; width: 100vw; height: 100vh; background: transparent;
+  }
+
+  /* UI Overlay */
+  .overlay {
+    pointer-events: none;
+    position: fixed; inset: 0; display: grid;
+    grid-template-rows: 1fr auto auto; place-items: center; padding: 16px;
+  }
+  .title {
+    pointer-events: auto;
+    text-align: center;
+    line-height: 1.05;
+    letter-spacing: 0.3px;
+    user-select: none;
+    filter: drop-shadow(0 6px 24px rgba(0,0,0,0.6));
+    animation: float 6s ease-in-out infinite;
+  }
+  .title .line1 {
+    font-weight: 800; font-size: clamp(28px, 6vw, 70px);
+    background: linear-gradient(90deg, var(--saffron), #ffd2a6 30%, var(--white) 50%, #b8ffd1 70%, var(--green));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .title .line2 {
+    margin-top: 6px;
+    font-weight: 700; font-size: clamp(16px, 2.8vw, 28px);
+    color: rgba(255,255,255,0.9);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .chips {
+    display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+    pointer-events: auto;
+    margin: 12px 0 24px;
+  }
+  .chip {
+    padding: 6px 12px; border-radius: 999px;
+    background: var(--glass); border: 1px solid var(--glass-stroke);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    font-size: 12px; opacity: 0.95;
+    transition: transform 0.3s ease, background 0.3s ease;
+  }
+  .chip:hover {
+    transform: translateY(-3px);
+    background: rgba(255,255,255,0.15);
+  }
+  .panel {
+    pointer-events: auto;
+    display: flex; gap: 10px; align-items: center; justify-content: center;
+    background: var(--glass); border: 1px solid var(--glass-stroke);
+    border-radius: 14px; padding: 10px 12px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.35);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  }
+  button, a.btn {
+    all: unset; cursor: pointer; user-select: none;
+    padding: 10px 14px; border-radius: 10px;
+    background: linear-gradient(135deg, rgba(255,153,51,0.92), rgba(19,136,8,0.92));
+    color: #081016; font-weight: 800; letter-spacing: 0.4px;
+    box-shadow: 0 6px 20px rgba(255,153,51,0.35), 0 6px 24px rgba(19,136,8,0.25);
+    transition: transform .15s ease, box-shadow .2s ease, filter .2s ease;
+  }
+  button:hover, a.btn:hover { transform: translateY(-1px); filter: saturate(1.15); }
+  .ghost {
+    background: transparent; color: #cfe7ff; font-weight: 700; border: 1px solid rgba(255,255,255,0.25);
+    box-shadow: none;
+  }
+  .small { font-size: 13px; opacity: 0.9; padding: 6px 10px; }
+  .rec-dot {
+    display:inline-block; width:10px; height:10px; background:#ff3b3b; border-radius:50%; margin-right:8px;
+    box-shadow: 0 0 0 0 rgba(255,59,59,0.8); animation: pulse 1.4s infinite;
+  }
+  .badge {
+    font-size: 12px; padding: 6px 10px; border-radius: 999px;
+    background: rgba(10,61,143,0.15); border: 1px solid rgba(10,61,143,0.35); color: #d7e7ff;
+    transition: all 0.3s ease;
+  }
+  .badge:hover {
+    background: rgba(10,61,143,0.3);
+    transform: translateY(-2px);
+  }
+  .credit { font-size: 11px; opacity: 0.7; margin-left: 10px; }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255,59,59,0.8);} 70%{box-shadow: 0 0 0 7px rgba(255,59,59,0);} 100%{box-shadow:0 0 0 0 rgba(255,59,59,0);} }
+  
+  /* Subtle vignette */
+  .vignette {
+    position: fixed; inset: -10vmax; pointer-events: none;
+    background: radial-gradient(80% 60% at 50% 30%, transparent 60%, rgba(0,0,0,0.35) 100%);
+    mix-blend-mode: multiply;
+  }
+  
+  /* New elements */
+  .controls {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .duration-select {
+    background: rgba(10, 61, 143, 0.2);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  
+  .duration-select option {
+    background: #0b1020;
+  }
+  
+  .sound-toggle {
+    background: var(--glass);
+    border: 1px solid var(--glass-stroke);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+  }
+  
+  .sound-toggle:hover {
+    background: rgba(255,255,255,0.15);
+    transform: scale(1.1);
+  }
+  
+  .countdown {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 5rem;
+    font-weight: 800;
+    color: white;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 100;
+    transition: opacity 0.3s;
+  }
+  
+  .info-card {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    max-width: 300px;
+    background: var(--glass);
+    border: 1px solid var(--glass-stroke);
+    border-radius: 14px;
+    padding: 16px;
+    backdrop-filter: blur(10px);
+    transform: translateY(-20px);
+    opacity: 0;
+    transition: all 0.5s ease;
+    pointer-events: none;
+  }
+  
+  .info-card.show {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+  
+  .info-card h3 {
+    margin-top: 0;
+    color: var(--saffron);
+  }
+  
+  .info-card p {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 18px;
+  }
+  
+  .info-icon {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 36px;
+    height: 36px;
+    background: var(--glass);
+    border: 1px solid var(--glass-stroke);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    font-weight: bold;
+    transition: all 0.3s ease;
+  }
+  
+  .info-icon:hover {
+    background: rgba(255,255,255,0.15);
+    transform: scale(1.1);
+  }
+</style>
+</head>
+<body>
+<canvas id="stage" aria-label="3D Independence Day Tribute"></canvas>
+
+<div class="overlay">
+  <div class="title">
+    <div class="line1">Happy Independence Day</div>
+    <div class="line2">भारत • 15 अगस्त</div>
+    <div class="chips">
+      <div class="chip">Waving Tricolour</div>
+      <div class="chip">Ashoka Chakra • 24 spokes</div>
+      <div class="chip">Tri‑colour Fireworks</div>
+      <div class="chip">WebM Export</div>
+      <div class="chip">Interactive Controls</div>
+    </div>
+  </div>
+
+  <div class="panel" style="gap:12px; flex-wrap: wrap;">
+    <button id="recordBtn" title="Record a 10‑second WebM of the live 3D scene">
+      <span class="rec-dot" id="recDot" style="visibility:hidden"></span> Record 10s
+    </button>
+    <a id="downloadLink" class="btn ghost small" style="display:none" download="Bharat-3D-Independence-Day.webm">Download</a>
+    <span class="badge" id="fpsCounter">60 FPS • GPU</span>
+    <span class="credit">Built with Three.js + GLSL</span>
+  </div>
+
+  <div style="height: 30px;"></div>
+</div>
+
+<div class="vignette"></div>
+<div id="countdown" class="countdown">3</div>
+
+<!-- Information card -->
+<div class="info-card" id="infoCard">
+  <button class="close-btn" id="closeInfo">×</button>
+  <h3>Indian Independence</h3>
+  <p>India gained independence from British rule on August 15, 1947. This day is celebrated across the nation with flag-hoisting ceremonies, parades, and cultural events.</p>
+  <p>The tricolour flag features:</p>
+  <ul>
+    <li>Saffron: Strength and courage</li>
+    <li>White: Peace and truth</li>
+    <li>Green: Fertility and growth</li>
+  </ul>
+  <p>The Ashoka Chakra at the center has 24 spokes representing the eternal wheel of law.</p>
+</div>
+
+<div class="info-icon" id="infoIcon">i</div>
+
+<div class="controls">
+  <select id="durationSelect" class="duration-select">
+    <option value="10">10s Recording</option>
+    <option value="15">15s Recording</option>
+    <option value="20">20s Recording</option>
+  </select>
+  <div class="sound-toggle" id="soundToggle">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+      <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+      <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+    </svg>
+  </div>
+</div>
+
+<!-- three.js -->
+<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+<script>
+(() => {
+  // FPS counter
+  let frameCount = 0;
+  let lastFpsUpdate = 0;
+  const fpsCounter = document.getElementById('fpsCounter');
+  
+  // Audio context for sound effects
+  let audioContext;
+  let soundOn = false;
+  let fireworksSound;
+  const soundToggle = document.getElementById('soundToggle');
+  
+  // Info card
+  const infoIcon = document.getElementById('infoIcon');
+  const infoCard = document.getElementById('infoCard');
+  const closeInfo = document.getElementById('closeInfo');
+  
+  // Initialize audio
+  function initAudio() {
+    try {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      
+      // Create fireworks sound
+      fireworksSound = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      fireworksSound.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      fireworksSound.type = 'sine';
+      fireworksSound.frequency.value = 0;
+      gainNode.gain.value = 0;
+      fireworksSound.start();
+      
+      soundOn = true;
+      soundToggle.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+      `;
+    } catch (e) {
+      console.log("Audio not supported", e);
+      soundToggle.style.display = 'none';
+    }
+  }
+  
+  // Toggle sound
+  soundToggle.addEventListener('click', () => {
+    if (!audioContext) {
+      initAudio();
+      return;
+    }
+    
+    soundOn = !soundOn;
+    if (soundOn) {
+      soundToggle.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+      `;
+    } else {
+      soundToggle.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <line x1="23" y1="9" x2="17" y2="15"></line>
+          <line x1="17" y1="9" x2="23" y2="15"></line>
+        </svg>
+      `;
+    }
+  });
+  
+  // Info card toggle
+  infoIcon.addEventListener('click', () => {
+    infoCard.classList.add('show');
+  });
+  
+  closeInfo.addEventListener('click', () => {
+    infoCard.classList.remove('show');
+  });
+  
+  // Play fireworks sound
+  function playFireworksSound() {
+    if (!soundOn || !audioContext) return;
+    
+    const now = audioContext.currentTime;
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(800, now);
+    oscillator.frequency.exponentialRampToValueAtTime(100, now + 1.2);
+    
+    gainNode.gain.setValueAtTime(0.2, now);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+    
+    oscillator.start(now);
+    oscillator.stop(now + 1.2);
+  }
+
+  const canvas = document.getElementById('stage');
+  const renderer = new THREE.WebGLRenderer({ 
+    canvas, 
+    antialias: true, 
+    preserveDrawingBuffer: true,
+    powerPreference: "high-performance"
+  });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.Fog(0x0b1020, 15, 30);
+
+  // Camera
+  const camera = new THREE.PerspectiveCamera(55, window.innerWidth/window.innerHeight, 0.1, 200);
+  camera.position.set(0, 1.4, 6);
+
+  // Lighting
+  const hemi = new THREE.HemisphereLight(0xffffff, 0x223355, 0.8);
+  const dir  = new THREE.DirectionalLight(0xfff2d0, 1.8);
+  dir.position.set(-2, 3, 2);
+  dir.castShadow = true;
+  dir.shadow.mapSize.width = 1024;
+  dir.shadow.mapSize.height = 1024;
+  scene.add(hemi, dir);
+
+  // Gradient sky dome
+  const skyGeo = new THREE.SphereGeometry(80, 32, 32);
+  const skyMat = new THREE.ShaderMaterial({
+    side: THREE.BackSide,
+    uniforms: {
+      top: { value: new THREE.Color('#0b1020') },
+      mid: { value: new THREE.Color('#1c2a60') },
+      bot: { value: new THREE.Color('#030611') }
+    },
+    vertexShader: `
+      varying vec3 vPos;
+      void main() {
+        vPos = position;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
+      }
+    `,
+    fragmentShader: `
+      varying vec3 vPos;
+      uniform vec3 top; uniform vec3 mid; uniform vec3 bot;
+      void main() {
+        float h = normalize(vPos).y * 0.5 + 0.5;
+        vec3 col = mix(bot, mid, smoothstep(0.2, 0.65, h));
+        col = mix(col, top, smoothstep(0.65, 1.0, h));
+        gl_FragColor = vec4(col, 1.0);
+      }
+    `
+  });
+  const sky = new THREE.Mesh(skyGeo, skyMat);
+  scene.add(sky);
+
+  // Ground faint plane for depth
+  const ground = new THREE.Mesh(
+    new THREE.CircleGeometry(80, 64),
+    new THREE.MeshStandardMaterial({ 
+      color: 0x0d111f, 
+      roughness: 1, 
+      metalness: 0 
+    })
+  );
+  ground.rotation.x = -Math.PI/2;
+  ground.position.y = -1.25;
+  ground.receiveShadow = true;
+  scene.add(ground);
+
+  // --- Ashoka Chakra (procedural: ring + 24 spokes) ---
+  const chakra = new THREE.Group();
+  const ring = new THREE.Mesh(
+    new THREE.RingGeometry(0.38, 0.42, 128),
+    new THREE.MeshBasicMaterial({ color: 0x0A3D8F })
+  );
+  chakra.add(ring);
+
+  // Add glow effect to chakra
+  const chakraGlow = new THREE.Mesh(
+    new THREE.RingGeometry(0.45, 0.48, 128),
+    new THREE.MeshBasicMaterial({ 
+      color: 0x0A3D8F, 
+      transparent: true,
+      opacity: 0.4,
+      blending: THREE.AdditiveBlending
+    })
+  );
+  chakra.add(chakraGlow);
+
+  const hub = new THREE.Mesh(new THREE.CircleGeometry(0.06, 32), new THREE.MeshBasicMaterial({ color: 0x0A3D8F }));
+  chakra.add(hub);
+
+  const spokeGeom = new THREE.BoxGeometry(0.01, 0.36, 0.01);
+  for (let i=0;i<24;i++){
+    const spoke = new THREE.Mesh(spokeGeom, new THREE.MeshBasicMaterial({ color: 0x0A3D8F }));
+    const a = (i/24)*Math.PI*2;
+    spoke.position.set(Math.sin(a)*0.18, Math.cos(a)*0.18, 0);
+    spoke.lookAt(0,0,0);
+    chakra.add(spoke);
+    
+    // Add glow effect to spokes
+    const spokeGlow = new THREE.Mesh(
+      new THREE.BoxGeometry(0.015, 0.38, 0.015),
+      new THREE.MeshBasicMaterial({ 
+        color: 0x0A3D8F, 
+        transparent: true,
+        opacity: 0.4,
+        blending: THREE.AdditiveBlending
+      })
+    );
+    spokeGlow.position.set(Math.sin(a)*0.18, Math.cos(a)*0.18, 0);
+    spokeGlow.lookAt(0,0,0);
+    chakra.add(spokeGlow);
+  }
+  chakra.position.set(-0.6, 1.05, -0.25);
+  chakra.rotation.y = -0.4;
+  chakra.scale.set(1.3,1.3,1.3);
+  scene.add(chakra);
+
+  // --- Flag: waving shader with tricolour and embedded chakra motif ---
+  const flagGeo = new THREE.PlaneGeometry(2.6, 1.6, 240, 80);
+  const flagMat = new THREE.ShaderMaterial({
+    side: THREE.DoubleSide,
+    transparent: true,
+    uniforms: {
+      time: { value: 0 },
+      breeze: { value: 1.0 },
+      saffron: { value: new THREE.Color('#ff9933') },
+      white:   { value: new THREE.Color('#ffffff') },
+      green:   { value: new THREE.Color('#138808') },
+      chakra:  { value: new THREE.Color('#0A3D8F') },
+      windDir: { value: new THREE.Vector2(0.8, 0.2) }
+    },
+    vertexShader: `
+      uniform float time;
+      uniform float breeze;
+      uniform vec2 windDir;
+      varying vec2 vUv;
+      varying float vShade;
+      void main() {
+        vUv = uv;
+        vec3 pos = position;
+        
+        // Improved wave calculation with wind direction
+        float wave = sin((pos.y*3.0 + time*2.2) + pos.x*1.8) * 0.08;
+        float wave2 = sin((pos.x*2.5 - time*1.4) + pos.y*2.7) * 0.05;
+        
+        // Apply wind direction influence
+        vec2 windEffect = vec2(
+          windDir.x * sin(time*1.1 + pos.y*4.0),
+          windDir.y * sin(time*1.3 + pos.x*3.0)
+        );
+        
+        // Combine waves with wind effect
+        pos.z += (wave + wave2) * breeze;
+        
+        // Add wind direction effect
+        pos.z += (windEffect.x + windEffect.y) * 0.1;
+        
+        // Enhanced curl near free end
+        float curl = pow(smoothstep(0.2, 1.0, vUv.x), 2.0);
+        pos.z += curl * 0.12 * sin(time*1.1 + pos.y*4.0);
+        
+        // More realistic cloth movement
+        float sway = sin(time*0.8 + pos.x*0.7 + pos.y*1.2) * 0.03;
+        pos.z += sway * breeze;
+        
+        // Calculate shading
+        vShade = dot(normalize(normal), normalize(vec3(0.3,0.6,1.0)));
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform vec3 saffron; uniform vec3 white; uniform vec3 green; uniform vec3 chakra;
+      varying vec2 vUv; varying float vShade;
+
+      // draw ring
+      float ring(vec2 uv, vec2 c, float r, float w){
+        float d = length(uv - c);
+        return smoothstep(r, r-0.002, d) * smoothstep(r+w, r+w+0.002, d);
+      }
+      // draw line (spokes)
+      float spoke(vec2 uv, vec2 c, float ang, float len, float w){
+        vec2 p = uv - c;
+        float a = atan(p.y, p.x);
+        float d = abs(ang - a);
+        d = min(d, 6.28318 - d);
+        float radial = smoothstep(w, 0.0, d) * step(length(p), len);
+        return radial;
+      }
+
+      void main(){
+        // map vUv.y to stripes (top: saffron, middle: white, bottom: green)
+        vec3 col = vec3(0.0);
+        if (vUv.y > 2.0/3.0) col = saffron;
+        else if (vUv.y > 1.0/3.0) col = white;
+        else col = green;
+
+        // subtle cloth shading
+        float shade = 0.35 + 0.65 * clamp(vShade, 0.0, 1.0);
+        col *= shade;
+
+        // place chakra in the center of the white band
+        vec2 c = vec2(0.5, 0.5);
+        float R = 0.16;
+
+        // main ring
+        float ringMask = ring(vUv, c, R, 0.012);
+
+        // inner hub
+        float hub = smoothstep(0.05, 0.048, length(vUv - c));
+
+        // 24 spokes
+        float spokes = 0.0;
+        for(int i=0;i<24;i++){
+          float ang = (float(i) / 24.0) * 6.28318;
+          spokes = max(spokes, spoke(vUv, c, ang, R, 0.017));
+        }
+
+        vec3 chakraCol = chakra;
+        col = mix(col, chakraCol, clamp(ringMask + hub + spokes, 0.0, 1.0));
+
+        // fabric texture effect
+        float weaveX = mod(vUv.x * 80.0, 1.0);
+        float weaveY = mod(vUv.y * 80.0, 1.0);
+        float weave = min(smoothstep(0.0, 0.1, weaveX) * smoothstep(1.0, 0.9, weaveX),
+                     smoothstep(0.0, 0.1, weaveY) * smoothstep(1.0, 0.9, weaveY));
+        col *= (0.92 + 0.08 * weave);
+
+        // slight fabric vignette
+        float edge = smoothstep(0.0, 0.04, vUv.x) * (1.0 - smoothstep(0.96, 1.0, vUv.x));
+        col *= (0.95 + 0.05 * edge);
+
+        gl_FragColor = vec4(col, 0.98);
+      }
+    `
+  });
+  const flag = new THREE.Mesh(flagGeo, flagMat);
+  flag.position.set(0.6, 1.15, -0.2);
+  flag.rotation.set(0, 0.35, 0);
+  scene.add(flag);
+
+  // Simple pole
+  const pole = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.04, 0.04, 3.2, 24),
+    new THREE.MeshStandardMaterial({ 
+      color: 0xbfc5d1, 
+      metalness: 0.8, 
+      roughness: 0.35 
+    })
+  );
+  pole.position.set(-0.7, 0.5, -0.3);
+  pole.castShadow = true;
+  scene.add(pole);
+
+  // Base pedestal
+  const base = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.38, 0.5, 0.18, 48),
+    new THREE.MeshStandardMaterial({ 
+      color: 0x1b233a, 
+      roughness: 0.9,
+      metalness: 0.2
+    })
+  );
+  base.position.set(-0.7, -1.15, -0.3);
+  base.castShadow = true;
+  scene.add(base);
+
+  // --- Fireworks particle system (tri-colour) ---
+  const fireworks = [];
+  const colors = [ new THREE.Color('#ff9933'), new THREE.Color('#ffffff'), new THREE.Color('#138808') ];
+  const fwGroup = new THREE.Group();
+  scene.add(fwGroup);
+
+  function spawnFirework() {
+    const count = 280;
+    const geo = new THREE.BufferGeometry();
+    const pos = new Float32Array(count * 3);
+    const vel = new Float32Array(count * 3);
+    const col = new Float32Array(count * 3);
+    const life = new Float32Array(count);
+    const size = new Float32Array(count);
+    const trail = new Float32Array(count);
+
+    const centerX = THREE.MathUtils.randFloatSpread(3.0);
+    const centerY = THREE.MathUtils.randFloat(0.5, 2.6);
+    const centerZ = THREE.MathUtils.randFloat(-1.2, 0.8);
+
+    const colorA = colors[Math.floor(Math.random()*colors.length)];
+    const colorB = colors[Math.floor(Math.random()*colors.length)];
+
+    for (let i=0;i<count;i++){
+      // Initially all at center
+      pos[i*3+0] = centerX;
+      pos[i*3+1] = centerY;
+      pos[i*3+2] = centerZ;
+
+      // Random spherical direction
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(THREE.MathUtils.randFloatSpread(1));
+      const speed = THREE.MathUtils.randFloat(0.8, 2.3);
+      const sx = Math.sin(phi) * Math.cos(theta) * speed;
+      const sy = Math.cos(phi) * speed * 0.9;
+      const sz = Math.sin(phi) * Math.sin(theta) * speed;
+
+      vel[i*3+0] = sx;
+      vel[i*3+1] = sy;
+      vel[i*3+2] = sz;
+
+      const mix = Math.random();
+      const c = colorA.clone().lerp(colorB, mix);
+      col[i*3+0] = c.r; col[i*3+1] = c.g; col[i*3+2] = c.b;
+
+      life[i] = THREE.MathUtils.randFloat(1.4, 2.2);
+      size[i] = THREE.MathUtils.randFloat(0.5, 1.5);
+      trail[i] = Math.random() * 0.5 + 0.5;
+    }
+
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    geo.setAttribute('velocity', new THREE.BufferAttribute(vel, 3));
+    geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    geo.setAttribute('life', new THREE.BufferAttribute(life, 1));
+    geo.setAttribute('size', new THREE.BufferAttribute(size, 1));
+    geo.setAttribute('trail', new THREE.BufferAttribute(trail, 1));
+
+    const mat = new THREE.ShaderMaterial({
+      transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+      uniforms: { time: { value: 0 } },
+      vertexShader: `
+        attribute vec3 velocity;
+        attribute float life;
+        attribute float size;
+        attribute float trail;
+        attribute vec3 color;
+        uniform float time;
+        varying vec3 vColor;
+        varying float vLife;
+        varying float vSize;
+        varying float vTrail;
+        void main(){
+          vColor = color; 
+          vLife = life;
+          vSize = size;
+          vTrail = trail;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          gl_PointSize = 12.0 * vSize * (1.0 / -gl_Position.z) * 60.0;
+        }
+      `,
+      fragmentShader: `
+        varying vec3 vColor;
+        varying float vLife;
+        varying float vSize;
+        varying float vTrail;
+        void main(){
+          vec2 uv = gl_PointCoord - 0.5;
+          float d = length(uv);
+          
+          // Core particle
+          float core = smoothstep(0.5, 0.0, d);
+          
+          // Trail effect for particles with high trail value
+          if (vTrail > 0.7) {
+            float trail = smoothstep(0.7, 0.0, abs(uv.x));
+            core = max(core, trail * 0.6);
+          }
+          
+          // Glow effect
+          float glow = (0.3 - d) * 3.0;
+          
+          // Final alpha with life fade
+          float alpha = core + glow;
+          alpha *= smoothstep(0.0, 0.2, vLife) * (1.0 - smoothstep(1.8, 2.2, vLife));
+          
+          gl_FragColor = vec4(vColor, alpha);
+        }
+      `
+    });
+
+    const points = new THREE.Points(geo, mat);
+    points.userData = { 
+      birth: performance.now()/1000, 
+      gravity: -0.9,
+      center: new THREE.Vector3(centerX, centerY, centerZ)
+    };
+    fwGroup.add(points);
+    fireworks.push(points);
+    
+    // Play sound
+    playFireworksSound();
+  }
+
+  // Launch fireworks intermittently
+  let fwTimer = 0;
+
+  // Resize
+  function onResize(){
+    const w = window.innerWidth, h = window.innerHeight;
+    camera.aspect = w/h; camera.updateProjectionMatrix();
+    renderer.setSize(w,h);
+  }
+  window.addEventListener('resize', onResize);
+
+  // Animation
+  const clock = new THREE.Clock();
+
+  function updateFireworks(dt) {
+    fwTimer += dt;
+    if (fwTimer > 0.5 + Math.random()*0.7) {
+      spawnFirework();
+      fwTimer = 0;
+    }
+    
+    for (let i=fireworks.length-1; i>=0; i--){
+      const p = fireworks[i];
+      const geo = p.geometry;
+      const pos = geo.attributes.position.array;
+      const vel = geo.attributes.velocity.array;
+      const life = geo.attributes.life.array;
+      const t = performance.now()/1000;
+      const age = t - p.userData.birth;
+
+      const count = pos.length/3;
+      for (let j=0;j<count;j++){
+        // velocity integrate
+        vel[j*3+1] += p.userData.gravity * dt;
+        pos[j*3+0] += vel[j*3+0] * dt;
+        pos[j*3+1] += vel[j*3+1] * dt;
+        pos[j*3+2] += vel[j*3+2] * dt;
+        
+        // Update life
+        life[j] = Math.max(0, life[j] - dt);
+      }
+      geo.attributes.position.needsUpdate = true;
+      geo.attributes.life.needsUpdate = true;
+
+      // fade out with age
+      p.material.opacity = THREE.MathUtils.clamp(1.5 - age, 0, 1);
+      if (age > 1.6) p.material.opacity *= THREE.MathUtils.smoothstep(2.2, 1.6, age);
+      if (age > 2.3) {
+        fwGroup.remove(p); p.geometry.dispose(); p.material.dispose(); fireworks.splice(i,1);
+      }
+    }
+  }
+
+  function animate() {
+    const t = clock.getElapsedTime();
+    const dt = clock.getDelta();
+    
+    // Update FPS counter
+    frameCount++;
+    if (t - lastFpsUpdate > 0.5) {
+      const fps = Math.round(frameCount / (t - lastFpsUpdate));
+      fpsCounter.textContent = `${fps} FPS • GPU`;
+      frameCount = 0;
+      lastFpsUpdate = t;
+    }
+
+    // Camera subtle orbit
+    const r = 6.0, s = 0.15;
+    camera.position.x = Math.cos(t*0.25)*r*0.12;
+    camera.position.z = 6 + Math.sin(t*0.25)*r*0.08;
+    camera.position.y = 1.35 + Math.sin(t*0.5)*0.02;
+    camera.lookAt(0, 0.95, -0.2);
+
+    // Flag wave
+    flag.material.uniforms.time.value = t;
+    flag.material.uniforms.breeze.value = 1.0 + Math.sin(t*0.6)*0.15;
+    
+    // Dynamic wind direction
+    const windX = Math.sin(t * 0.3) * 0.5 + 0.5;
+    const windY = Math.cos(t * 0.4) * 0.5 + 0.5;
+    flag.material.uniforms.windDir.value.set(windX, windY);
+
+    // Chakra gentle spin
+    chakra.rotation.z = Math.sin(t*0.6)*0.06;
+
+    updateFireworks(dt);
+
+    renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+  }
+  
+  // Initialize audio on first interaction
+  document.body.addEventListener('click', function init() {
+    if (!audioContext) {
+      initAudio();
+    }
+    document.body.removeEventListener('click', init);
+  }, { once: true });
+
+  animate();
+
+  // ---- Recording to WebM (10 seconds) ----
+  const recordBtn = document.getElementById('recordBtn');
+  const recDot = document.getElementById('recDot');
+  const downloadLink = document.getElementById('downloadLink');
+  const durationSelect = document.getElementById('durationSelect');
+  const countdownEl = document.getElementById('countdown');
+  let mediaRecorder, recordedChunks = [], isRecording = false;
+
+  function showCountdown(seconds, callback) {
+    countdownEl.style.opacity = 1;
+    countdownEl.textContent = seconds;
+    
+    if (seconds > 0) {
+      gsap.fromTo(countdownEl, 
+        { scale: 0.5, opacity: 0 }, 
+        { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(1.7)" }
+      );
+      
+      setTimeout(() => {
+        gsap.to(countdownEl, { 
+          scale: 0.8, 
+          opacity: 0.5, 
+          duration: 0.7, 
+          ease: "power1.out",
+          onComplete: () => {
+            showCountdown(seconds - 1, callback);
+          }
+        });
+      }, 800);
+    } else {
+      gsap.to(countdownEl, { 
+        scale: 1.5, 
+        opacity: 0, 
+        duration: 0.5, 
+        ease: "power2.in",
+        onComplete: callback
+      });
+    }
+  }
+
+  function startRecording(seconds=10) {
+    if (isRecording) return;
+    const stream = canvas.captureStream(60);
+    recordedChunks = [];
+    mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
+    mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
+    mediaRecorder.onstop = () => {
+      const blob = new Blob(recordedChunks, { type: 'video/webm' });
+      const url = URL.createObjectURL(blob);
+      downloadLink.href = url;
+      downloadLink.style.display = 'inline-block';
+      downloadLink.textContent = 'Download (WebM)';
+      recordBtn.textContent = 'Record';
+      recDot.style.visibility = 'hidden';
+      isRecording = false;
+    };
+    
+    showCountdown(3, () => {
+      mediaRecorder.start();
+      isRecording = true;
+      recDot.style.visibility = 'visible';
+      recordBtn.textContent = 'Recording...';
+
+      setTimeout(() => {
+        if (isRecording) mediaRecorder.stop();
+      }, seconds * 1000);
+    });
+  }
+
+  recordBtn.addEventListener('click', () => {
+    const seconds = parseInt(durationSelect.value);
+    startRecording(seconds);
+  });
+  
+  // Add keyboard controls
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'r' || e.key === 'R') {
+      const seconds = parseInt(durationSelect.value);
+      startRecording(seconds);
+    }
+    if (e.key === 'f' || e.key === 'F') {
+      spawnFirework();
+    }
+    if (e.key === 's' || e.key === 'S') {
+      soundToggle.click();
+    }
+    if (e.key === 'i' || e.key === 'I') {
+      infoIcon.click();
+    }
+    if (e.key === 'Escape') {
+      if (infoCard.classList.contains('show')) {
+        infoCard.classList.remove('show');
+      }
+    }
+  });
+  
+  // Add fireworks on click
+  canvas.addEventListener('click', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    const y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+    
+    // Only spawn if not over UI elements
+    if (y < 0.5) {
+      spawnFirework();
+    }
+  });
+})();
+</script>
+</body>
+</html>
